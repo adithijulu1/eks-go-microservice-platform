@@ -4,17 +4,17 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 }
 
 resource "aws_db_instance" "app_db" {
-  identifier             = "${var.cluster_name}-db"
-  engine                 = "postgres"
-  engine_version         = "16.3"
-  instance_class         = "db.t3.medium"
-  allocated_storage      = 50
-  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-  username               = var.db_username
+  identifier                  = "${var.cluster_name}-db"
+  engine                      = "postgres"
+  engine_version              = "16.3"
+  instance_class              = "db.t3.medium"
+  allocated_storage           = 50
+  db_subnet_group_name        = aws_db_subnet_group.rds_subnet_group.name
+  username                    = var.db_username
   manage_master_user_password = true
-  multi_az               = true
-  backup_retention_period = 7
-  skip_final_snapshot    = false
+  multi_az                    = true
+  backup_retention_period     = 7
+  skip_final_snapshot         = false
 
   tags = {
     Environment = var.environment

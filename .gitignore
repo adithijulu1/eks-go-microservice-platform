@@ -11,7 +11,7 @@ crash.log
 *.exe
 *.test
 *.out
-service
+/service
 vendor/
 
 # Secrets / env

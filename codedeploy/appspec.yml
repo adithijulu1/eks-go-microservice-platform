@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/go-microservice
+hooks:
+  ApplicationStop:
+    - location: codedeploy/scripts/stop_service.sh
+      timeout: 60
+  ApplicationStart:
+    - location: codedeploy/scripts/start_service.sh
+      timeout: 120

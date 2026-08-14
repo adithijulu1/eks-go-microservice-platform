@@ -1,0 +1,62 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/go:1.22
+    steps:
+      - checkout
+      - run:
+          name: Download dependencies
+          command: go mod download
+      - run:
+          name: Run tests
+          command: go test ./... -v
+      - run:
+          name: Build binary
+          command: go build -o service ./cmd/service
+
+  build-and-push-image:
+    docker:
+      - image: cimg/base:2024.02
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t $ECR_REPO:$CIRCLE_SHA1 .
+      - run:
+          name: Push to ECR
+          command: |
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
+            docker push $ECR_REPO:$CIRCLE_SHA1
+
+  deploy-via-codedeploy:
+    docker:
+      - image: cimg/aws:2024.03
+    steps:
+      - checkout
+      - run:
+          name: Trigger CodeDeploy deployment
+          command: |
+            aws deploy create-deployment \
+              --application-name go-microservice-app \
+              --deployment-group-name production \
+              --github-location repository=$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME,commitId=$CIRCLE_SHA1
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - build-and-test
+      - build-and-push-image:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
+      - deploy-via-codedeploy:
+          requires:
+            - build-and-push-image
+          filters:
+            branches:
+              only: main

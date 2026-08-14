@@ -1,0 +1,33 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform.lock.hcl
+tfplan
+crash.log
+
+# Go
+*.exe
+*.test
+*.out
+service
+vendor/
+
+# Secrets / env
+*.pem
+*.key
+.env
+*.env.local
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
